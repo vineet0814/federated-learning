@@ -49,7 +49,7 @@ args.attenuation_factor_arr = [1]
 args.fps_accuracy = np.zeros((args.avg, len(args.lambda_reg_arr), len(args.cols_arr), len(args.k_arr), len(args.attenuation_factor_arr), int(args.num_epochs/args.global_agg)))
 args.fedprox_accuracy = np.zeros((args.avg, len(args.lambda_reg_arr), int(args.num_epochs/args.global_agg)))
 args.randk_accuracy = np.zeros((args.avg,len(args.cols_arr) , int(args.num_epochs/args.global_agg)))
-args.noComp_accuracy = np.zeros((args.avg , int(args.num_epochs/args.global_agg)))
+args.fedAvg_accuracy = np.zeros((args.avg , int(args.num_epochs/args.global_agg)))
 args.topk_accuracy = np.zeros((args.avg,len(args.cols_arr) , int(args.num_epochs/args.global_agg)))
 args.fetchSGD_accuracy = np.zeros((args.avg, len(args.cols_arr), len(args.k_arr), len(args.attenuation_factor_arr), int(args.num_epochs/args.global_agg)))
 
@@ -57,18 +57,8 @@ args.fetchSGD_accuracy = np.zeros((args.avg, len(args.cols_arr), len(args.k_arr)
 for avg in range(args.avg):
     args.lambda_reg = 0
     args.attenuation_factor = 1 
-    args.noComp_accuracy[avg,:] = noComp(args) 
-for avg in range(args.avg):
-    args.current_avg_round = avg
-    for reg in range(len(args.lambda_reg_arr)):
-        for ii in range(len(args.cols_arr)):
-            for jj in range(len(args.k_arr)):
-                for ell in range(len(args.attenuation_factor_arr)):
-                    args.lambda_reg = args.lambda_reg_arr[reg]
-                    args.cols = args.cols_arr[ii]
-                    args.k = args.k_arr[jj]
-                    args.attenuation_factor = args.attenuation_factor_arr[ell]
-                    args.fps_accuracy[avg, reg, ii,jj,ell,:] = fps(args)
+    args.fedAvg_accuracy[avg,:] = fedAvg(args) 
+    
                    
 for avg in range(args.avg):
     for reg in range(len(args.lambda_reg_arr)):

@@ -34,13 +34,6 @@ from data_loader_mnist import get_data_loader, get_next_batch
 
 
 
-def signalPower(x):
-    return np.mean(x**2)
-    
-def SNR(signal, noise):
-    powS = signalPower(signal)
-    powN = signalPower(noise)
-    return 10*np.log10((powS-powN)/powN)
 
 def gradients_to_vector(gradients):
     """
@@ -133,6 +126,7 @@ def attenuate_array(arr, k, attenuation_factor):
     
 def topk(args):
     networks = [learning_model_reg(args) for _ in range(10)]
+    data_loaders, test_loader = get_data_loader(args)
     reference_params = networks[0].DNN_model.parameters()
     user_grad, user_final_shape, user_initial_shape = networks[0].grad_compute_loader_reg(data_loaders[0],  networks[0].DNN_model, reference_params)
     args.p = len(user_grad)
@@ -174,6 +168,7 @@ def topk(args):
     
 def randk(args):
     networks = [learning_model_reg(args) for _ in range(10)]
+    data_loaders, test_loader = get_data_loader(args)
     reference_params = networks[0].DNN_model.parameters()
     user_grad, user_final_shape, user_initial_shape = networks[0].grad_compute_loader_reg(data_loaders[0],  networks[0].DNN_model, reference_params)
     args.p = len(user_grad)
@@ -212,6 +207,7 @@ def randk(args):
     return randk_accuracy
 
 def fedAvg(args):
+    # FedAvg with full client selection and updates pushed to central server at every round.
     networks = [learning_model_reg(args) for _ in range(10)]
     reference_params = networks[0].DNN_model.parameters()
     user_grad, user_final_shape, user_initial_shape = networks[0].grad_compute_loader_reg(data_loaders[0],  networks[0].DNN_model, reference_params)
@@ -340,6 +336,7 @@ def fedAvg_random_clientSelection(args):
     return fedAvg_random_CS_accuracy
 
 def fedprox(args):
+    data_loaders, test_loader = get_data_loader(args)
     networks = [learning_model_reg(args) for _ in range(10)]
     parameter_network = learning_model_reg(args)
     reference_params = networks[0].DNN_model.parameters()
@@ -377,6 +374,7 @@ def fedprox(args):
     return fedprox_accuracy
 
 def fetchSGD(args):
+    data_loaders, test_loader = get_data_loader(args)
     networks = [learning_model_reg(args) for _ in range(10)]
     parameter_network = learning_model_reg(args)
     reference_params = networks[0].DNN_model.parameters()
@@ -437,6 +435,7 @@ def fetchSGD(args):
             fetchSGD_accuracy.append(accuracy)
             print(f'FetchSGD accuracy for average round = {args.current_avg_round}, regularization factor = {args.lambda_reg}, k = {args.k}, columns = {args.cols} and attenuation = {args.attenuation_factor}, at iteration:', epoch,'is: ', accuracy)
     return fetchSGD_accuracy
+
 
 
 
